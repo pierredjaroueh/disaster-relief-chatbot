@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Disaster Relief Chatbot</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #e0f7fa, #ffffff);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 28px;
+      color: #0077aa;
+    }
+
+    #chatContainer {
+      width: 90%;
+      max-width: 500px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+
+    #chatResponse {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      background-color: #fafafa;
+      white-space: pre-wrap;
+    }
+
+    .userMessage {
+      color: #1565c0;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+
+    .botMessage {
+      color: #333;
+      margin: 5px 0;
+    }
+
+    #inputSection {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 10px 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Disaster Relief Chatbot</h1>
+  <div id="chatContainer">
+    <div id="chatResponse"></div>
+    <div id="inputSection">
+      <input type="text" id="userInput" placeholder="Type your message here" />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const message = document.getElementById('userInput').value.trim();
+      const chatBox = document.getElementById('chatResponse');
+
+      if (!message) return;
+
+      chatBox.innerHTML += `<div class="userMessage">You: ${message}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      try {
+        const response = await fetch('https://98a1fac1-e957-4abe-b6b6-56135f4f2464-00-22v3bdy4jwmf3.spock.replit.dev/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: message })
+        });
+
+        const data = await response.json();
+        const botReplyHtml = marked.parse(data.reply);
+        chatBox.innerHTML += `<div class="botMessage">${botReplyHtml}</div>`;
+      } catch (error) {
+        chatBox.innerHTML += `<div class="botMessage">⚠️ Error: Could not reach backend.</div>`;
+      }
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+      document.getElementById('userInput').value = '';
+    }
+  </script>
+</body>
+</html>
+
